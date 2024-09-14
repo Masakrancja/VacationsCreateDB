@@ -1,0 +1,17 @@
+{
+    "name": "piotr/db_vacations",
+    "autoload": {
+        "psr-4": {
+            "Piotr\\DbVacations\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Piotr Pietrzak",
+            "email": "piotrpietrzak145@gmail.com"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.23"
+    }
+}
