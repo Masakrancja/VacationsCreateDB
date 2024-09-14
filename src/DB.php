@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Piotr\DbVacations;
 
+use Piotr\DbVacations\DatabaseException;
+
 class DB
 {
   private string $host;
@@ -27,8 +29,7 @@ class DB
       return $this->conn;
     }
     catch (\PDOException $e) {
-      echo $e->getMessage();
-      exit();
+      throw new DatabaseException("Incorrect credentials", 500);
     }
   }
 

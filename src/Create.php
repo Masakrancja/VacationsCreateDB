@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Piotr\DbVacations;
 use Faker\Factory;
 use \Piotr\DbVacations\Debug;
+use Piotr\DbVacations\DatabaseException;
 
 class Create
 {
@@ -11,7 +12,14 @@ class Create
   private \PDO $conn;
   public function __construct(DB $db)
   {
-    $this->conn = $db->connect();
+    try {
+      $this->conn = $db->connect();
+    }
+    catch (DatabaseException $e) {
+      echo $e->getMessage() . "\n";
+      exit();
+    }
+    
     $this->faker = Factory::create('pl_PL');
   }
 
@@ -22,8 +30,7 @@ class Create
       $stmt = $this->conn->prepare($sql);
       $stmt->execute();
     } catch (\PDOException $e) {
-      echo $e->getMessage();
-      exit();
+      throw new DatabaseException("Database error", 500);
     }
   }
 
@@ -34,8 +41,7 @@ class Create
       $stmt = $this->conn->prepare($sql);
       $stmt->execute();
     } catch (\PDOException $e) {
-      echo $e->getMessage();
-      exit();
+      throw new DatabaseException("Database error", 500);
     }
   }
 
@@ -68,7 +74,7 @@ class Create
           `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
           `address` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
           `postalCode` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-          `city` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `city` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
           `nip` varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL,
           `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
           `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -207,8 +213,7 @@ class Create
       $stmt->execute();
 
     } catch (\PDOException $e) {
-      echo $e->getMessage();
-      exit();
+      throw new DatabaseException("Database error", 500);
     }
 
   }
@@ -232,9 +237,7 @@ class Create
       }
       $this->conn->commit();
     } catch (\PDOException $e) {
-      $this->conn->rollBack();
-      echo $e->getMessage();
-      exit();
+      throw new DatabaseException("Database error", 500);
     }
   }
 
@@ -295,9 +298,7 @@ class Create
         $stmt->execute();
         $this->conn->commit();
       } catch (\PDOException $e) {
-        $this->conn->rollBack();
-        echo $e->getMessage();
-        exit();
+        throw new DatabaseException("Database error", 500);
       }
     }
   }
@@ -344,9 +345,7 @@ class Create
           $stmt->execute();
           $this->conn->commit();
         } catch (\PDOException $e) {
-          $this->conn->rollBack();
-          echo $e->getMessage();
-          exit();
+          throw new DatabaseException("Database error", 500);
         }
       }
     }
@@ -388,8 +387,7 @@ class Create
           $stmt->bindValue(':wantCancel', $event['wantCancel'], \PDO::PARAM_STR);
           $stmt->execute();
         } catch (\PDOException $e) {
-          echo $e->getMessage();
-          exit();
+          throw new DatabaseException("Database error", 500);
         }
       }
     }

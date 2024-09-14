@@ -2,21 +2,64 @@
 declare(strict_types=1);
 
 require 'vendor/autoload.php';
-$config = require 'config.php';
+//$config = require 'config.php';
 
 use \Piotr\DbVacations\Debug;
 use \Piotr\DbVacations\DB;
 use \Piotr\DbVacations\Create;
+use \Piotr\DbVacations\DatabaseException;
+use CliArgs\CliArgs;
 
-$create = new Create(new DB($config['host'], $config['user'], $config['name'], $config['pass']));
+$config = [
+  'host' => [
+      'help' => 'Hostname of database. Default: localhost',
+      'default' => 'localhost',
+  ],
+  'name' => [
+    'help' => 'Name of database. Default: Vacations',
+    'default' => 'Vacations',
+  ],
+  'user' => [
+      'help' => 'Database user',
+  ],
+  'pass' => [
+    'help' => 'Database password',
+  ]
+];
 
-$create->dropDatabase('Vacations');
-$create->createDatabase('Vacations');
-$create->createTables();
-$create->reasons();
-$create->admins(24);
-$create->users(1, 6);
-$create->events(6, 12);
+$cliArgs = new CliArgs($config);
+
+$host = $cliArgs->getArg('host');
+$name = $cliArgs->getArg('name');
+$user = $cliArgs->getArg('user');
+$pass = $cliArgs->getArg('pass');
+
+if ($user === null) {
+  echo "\n" . 'Give database user' . "\n";
+  echo $cliArgs->getHelp();
+  exit();
+}
+
+if ($pass === null) {
+  echo "\n" . 'Give database password' . "\n";
+  echo $cliArgs->getHelp();
+  exit();
+}
+
+$create = new Create(new DB($host, $user, $name, $pass));
+
+try {
+  $create->dropDatabase('Vacations');
+  $create->createDatabase('Vacations');
+  $create->createTables();
+  $create->reasons();
+  $create->admins(24);
+  $create->users(1, 6);
+  $create->events(6, 12);
+}
+catch (DatabaseException $e) {
+  echo $e->getMessage();
+}
 
 
 
