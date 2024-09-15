@@ -12,18 +12,22 @@ use CliArgs\CliArgs;
 
 $config = [
   'host' => [
-      'help' => 'Hostname of database. Default: localhost',
-      'default' => 'localhost',
+    'help' => 'Hostname of database. Default: localhost',
+    'default' => 'localhost',
   ],
   'name' => [
     'help' => 'Name of database. Default: Vacations',
     'default' => 'Vacations',
   ],
   'user' => [
-      'help' => 'Database user',
+    'help' => 'Database user',
   ],
   'pass' => [
     'help' => 'Database password',
+  ],
+  'empty' => [
+    'help' => 'If you use --empty=true database will be empty. Default: false',
+    'default' => 'false',
   ]
 ];
 
@@ -33,6 +37,7 @@ $host = $cliArgs->getArg('host');
 $name = $cliArgs->getArg('name');
 $user = $cliArgs->getArg('user');
 $pass = $cliArgs->getArg('pass');
+$empty = $cliArgs->getArg('empty');
 
 if ($user === null) {
   echo "\n" . 'Give database user' . "\n";
@@ -52,15 +57,13 @@ try {
   $create->dropDatabase('Vacations');
   $create->createDatabase('Vacations');
   $create->createTables();
-  $create->reasons();
-  $create->admins(24);
-  $create->users(1, 6);
-  $create->events(6, 12);
-}
-catch (DatabaseException $e) {
+  if (strtolower($empty) !== 'true') {
+    $create->reasons();
+    $create->admins(24);
+    $create->users(1, 6);
+    $create->events(6, 12);
+  }
+} catch (DatabaseException $e) {
   echo $e->getMessage();
 }
-
-
-
 
