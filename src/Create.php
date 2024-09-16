@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Piotr\DbVacations;
 use Faker\Factory;
-use \Piotr\DbVacations\Debug;
 use Piotr\DbVacations\DatabaseException;
 
 class Create
@@ -14,12 +13,11 @@ class Create
   {
     try {
       $this->conn = $db->connect();
-    }
-    catch (DatabaseException $e) {
+    } catch (DatabaseException $e) {
       echo $e->getMessage() . "\n";
       exit();
     }
-    
+
     $this->faker = Factory::create('pl_PL');
   }
 
@@ -158,7 +156,6 @@ class Create
       $stmt = $this->conn->prepare($sql);
       $stmt->execute();
 
-
       $sql = "
         ALTER TABLE `Tokens`
         ADD KEY `users_tokens` (`userId`)
@@ -215,7 +212,6 @@ class Create
     } catch (\PDOException $e) {
       throw new DatabaseException("Database error", 500);
     }
-
   }
 
   public function reasons(): void
@@ -230,12 +226,10 @@ class Create
     $sql = "INSERT INTO Reasons (name) VALUES (:name)";
     $stmt = $this->conn->prepare($sql);
     try {
-      $this->conn->beginTransaction();
       foreach ($reasons as $reason) {
         $stmt->bindValue(':name', $reason, \PDO::PARAM_STR);
         $stmt->execute();
       }
-      $this->conn->commit();
     } catch (\PDOException $e) {
       throw new DatabaseException("Database error", 500);
     }
@@ -247,6 +241,10 @@ class Create
       try {
         $this->conn->beginTransaction();
         $user = $this->getUser();
+        if ($i === 0) {
+          echo "\n" . 'Admin\'s credentials:' . "\n";
+          echo 'login: ' . $user['login'] . ' - pass: ' . $user['login'] . "\n\n";
+        }
         $sql = "
           INSERT INTO Users (login, pass, isActive, isAdmin)
           VALUES (:login, :pass, :isActive, :isAdmin)
@@ -298,6 +296,7 @@ class Create
         $stmt->execute();
         $this->conn->commit();
       } catch (\PDOException $e) {
+        $this->conn->rollBack();
         throw new DatabaseException("Database error", 500);
       }
     }
@@ -309,12 +308,17 @@ class Create
     $stmt = $this->conn->prepare($sql);
     $stmt->execute();
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    foreach ($rows ?? [] as $row) {
+    echo "\n" . 'User\'s credentials:' . "\n";
+    foreach ($rows ?? [] as $key => $row) {
       $c = $this->faker->numberBetween($from, $to);
       for ($i = 0; $i < $c; $i++) {
         try {
           $this->conn->beginTransaction();
           $user = $this->getUser((bool) $this->faker->numberBetween(0, 1), false);
+          if ($key === 0) {
+            echo 'login: ' . $user['login'] . ' - pass: ' . $user['login'] . "\n";
+          }
+
           $sql = "
             INSERT INTO Users (groupId, login, pass, isActive, isAdmin)
             VALUES (:groupId, :login, :pass, :isActive, :isAdmin)
@@ -345,6 +349,7 @@ class Create
           $stmt->execute();
           $this->conn->commit();
         } catch (\PDOException $e) {
+          $this->conn->rollBack();
           throw new DatabaseException("Database error", 500);
         }
       }

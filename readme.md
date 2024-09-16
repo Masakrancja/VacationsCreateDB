@@ -1,14 +1,14 @@
 Create sample database for application: Vacations
 
 WARNING:
-This program truncate given database and fill it new data. All older data will be lost
+This program truncate given database (default: Vacations) and fill it new data. All older data will be lost
 
 How to run.
 
 - first run:
   `composer install`
 
-- put in your favorite terminal following command:
-  `php index.php --host=<YOUR_DATABASE_HOST> --name=<YOUR_DATABASE_NAME> --user=<YOUR_DATABASE_USER> --pass=<YOUR_DATABASE_PASSWORD>`
+- simple use:
+  `php index.php --user=<YOUR_DB_USER> --pass=<YOUR_DB_PASSWORD>`
 
-or press `php index.php --help` for more help
+- or press `php index.php --help` for more options

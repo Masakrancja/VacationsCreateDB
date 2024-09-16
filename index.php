@@ -2,9 +2,7 @@
 declare(strict_types=1);
 
 require 'vendor/autoload.php';
-//$config = require 'config.php';
 
-use \Piotr\DbVacations\Debug;
 use \Piotr\DbVacations\DB;
 use \Piotr\DbVacations\Create;
 use \Piotr\DbVacations\DatabaseException;
@@ -26,8 +24,7 @@ $config = [
     'help' => 'Database password',
   ],
   'empty' => [
-    'help' => 'If you use --empty=true database will be empty. Default: false',
-    'default' => 'false',
+    'help' => 'If you use --empty flag -> database will be empty'
   ]
 ];
 
@@ -37,17 +34,24 @@ $host = $cliArgs->getArg('host');
 $name = $cliArgs->getArg('name');
 $user = $cliArgs->getArg('user');
 $pass = $cliArgs->getArg('pass');
-$empty = $cliArgs->getArg('empty');
+$isEmpty = $cliArgs->isFlagExist('empty');
+$isHelp = $cliArgs->isFlagExist('help');
+
+if ($isHelp) {
+  echo "\n";
+  echo $cliArgs->getHelp() . "\n";
+  exit();
+}
 
 if ($user === null) {
   echo "\n" . 'Give database user' . "\n";
-  echo $cliArgs->getHelp();
+  echo 'use --help flag for more informations' . "\n\n";
   exit();
 }
 
 if ($pass === null) {
   echo "\n" . 'Give database password' . "\n";
-  echo $cliArgs->getHelp();
+  echo 'use --help flag for more informations' . "\n\n";
   exit();
 }
 
@@ -57,13 +61,12 @@ try {
   $create->dropDatabase('Vacations');
   $create->createDatabase('Vacations');
   $create->createTables();
-  if (strtolower($empty) !== 'true') {
+  if (!$isEmpty) {
     $create->reasons();
-    $create->admins(24);
-    $create->users(1, 6);
-    $create->events(6, 12);
+    $create->admins(12);
+    $create->users(4, 6);
+    $create->events(8, 12);
   }
 } catch (DatabaseException $e) {
   echo $e->getMessage();
 }
-

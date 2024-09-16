@@ -27,15 +27,9 @@ class DB
       $this->conn = new \PDO($dns, $this->user, $this->pass);
       $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
       return $this->conn;
-    }
-    catch (\PDOException $e) {
+    } catch (\PDOException $e) {
       throw new DatabaseException("Incorrect credentials", 500);
     }
-  }
-
-  public function close(\PDO $conn): void
-  {
-    $conn = null;
   }
 
 }
