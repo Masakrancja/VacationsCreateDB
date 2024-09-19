@@ -55,7 +55,7 @@ if ($pass === null) {
   exit();
 }
 
-$create = new Create(new DB($host, $user, $name, $pass));
+$create = new Create(new DB($host, $user, '', $pass));
 
 try {
   $create->dropDatabase($name);
