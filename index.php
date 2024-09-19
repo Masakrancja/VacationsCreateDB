@@ -58,8 +58,8 @@ if ($pass === null) {
 $create = new Create(new DB($host, $user, $name, $pass));
 
 try {
-  $create->dropDatabase('Vacations');
-  $create->createDatabase('Vacations');
+  $create->dropDatabase($name);
+  $create->createDatabase($name);
   $create->createTables();
   if (!$isEmpty) {
     $create->reasons();
