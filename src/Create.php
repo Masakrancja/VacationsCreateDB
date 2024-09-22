@@ -314,7 +314,7 @@ class Create
       for ($i = 0; $i < $c; $i++) {
         try {
           $this->conn->beginTransaction();
-          $user = $this->getUser((bool) $this->faker->numberBetween(0, 1), false);
+          $user = $this->getUser(true, false);
           if ($key === 0) {
             echo 'login: ' . $user['login'] . ' - pass: ' . $user['login'] . "\n";
           }
